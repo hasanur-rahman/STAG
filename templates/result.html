@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAG Results</title>
+    <style>
+        /* Set the size of the div element that will contain the map */
+        #map {
+            height: 400px;  /* The height is 400 pixels */
+            width: 100%;  /* The width is the width of the web page */
+        }
+        /* New styles */
+        .content {
+            text-align: center;
+            width: 60%; /* Adjust as needed */
+            margin: 0 auto;
+        }
+        .content img {
+            width: 100%;
+            height: auto;
+        }
+        .content p {
+            text-align: left;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1 style="text-align:left;">Historical Overviews and Their Images</h1>
+        {% for historical_overview in historical_overview_result_list %}
+            <div>
+                <p>{{ historical_overview }}</p>
+                <img src="{{ image_urls[loop.index - 1] }}" alt="Image {{ loop.index }}">
+            </div>
+        {% endfor %}
+
+        <br>
+
+        <h1 style="text-align:left;">Local Cultural Insights</h1>
+
+        {% set cultural_insights_list = cultural_insights.split('\n\n') %}
+
+        {% for cultural_insight in cultural_insights_list %}
+            <div>
+                <p>{{ cultural_insight }}</p>
+            </div>
+        {% endfor %}
+
+        <br>
+
+        <h1 style="text-align:left;">Local Common Phrases</h1>
+        
+        {% set common_phrases_list = common_phrases.split('\n\n') %}
+
+        {% for common_phrase in common_phrases_list %}
+            <div>
+                <p>{{ common_phrase }}</p>
+            </div>
+        {% endfor %}
+
+        <br>
+
+        <h1 style="text-align:left;">Audio Pronunciation for Local Common Phrases</h1>
+        <audio controls>
+            <source src="data:audio/mpeg;base64,{{ audio_phrases_base64 }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <br>
+
+        <h1 style="text-align:left;">Personalized Itinerary</h1>
+        <div style="width:fit-content; word-wrap:break-word;">
+            <pre style="white-space: pre-wrap;">{{ personalized_itinerary}}</pre>
+        </div>
+
+        <br>
+
+        <div style="text-align:left;">
+            <h1>Top Locations Virtual Overview</h1>
+            {% for location, image_url in TopAttractionImageUrl.items() %}
+                <h2>{{ location }}</h2>
+                <img src="{{ image_url }}" alt="{{ location }}" style="display:block;">
+            {% endfor %}
+        </div>
+
+        <br>
+
+        <h1 style="text-align:left;">City Map</h1>
+        <div id="map"></div>
+        <script>
+            function initMap() {
+                var cityLoc = { lat: {{ CityLoc.lat }}, lng: {{ CityLoc.lng }} };
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 12,
+                    center: cityLoc
+                });
+
+                var cityMarker = new google.maps.Marker({
+                    position: cityLoc,
+                    map: map,
+                    title: '{{ CityName }}',
+                    icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'  // Blue marker for city
+                });
+
+                var topAttractions = [];
+                {% for attraction in TopAttractionCord %}
+                    topAttractions.push({ lat: {{ attraction['geometry']['location']['lat'] }}, lng: {{ attraction['geometry']['location']['lng'] }}, name: '{{ attraction['name'] }}' });
+                {% endfor %}
+                for (var i = 0; i < topAttractions.length; i++) {
+                    var marker = new google.maps.Marker({
+                        position: { lat: topAttractions[i].lat, lng: topAttractions[i].lng },
+                        map: map,
+                        title: topAttractions[i].name,
+                        icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'  // Red marker for attractions
+                    });
+
+                    // Get distance from city center to attraction
+                    var service = new google.maps.DistanceMatrixService();
+                    service.getDistanceMatrix({
+                        origins: [cityLoc],
+                        destinations: [marker.position],
+                        travelMode: 'DRIVING',
+                    }, function(response, status) {
+                        if (status == 'OK') {
+                            var distance = response.rows[0].elements[0].distance.text;
+                            // Update the marker title with the distance from the city center
+                            marker.setTitle(marker.getTitle() + ' (' + distance + ' from city center)');
+                            // Force the map to update the marker title
+                            marker.setMap(null);
+                            marker.setMap(map);
+                        }
+                    });
+                }
+            }
+        </script>
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzKG2cNwaXnqgNh8MzWRqCPMVTKsCQPQc&callback=initMap">
+        </script>
+
+
+
+
+
+    <!-- Add any other HTML content or styling as needed -->
+</body>
+</html>

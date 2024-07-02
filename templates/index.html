@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAG</title>
+</head>
+<body>
+    <h1>STAG - Smart Travel Assisting Guide</h1>
+    <form action="/process" method="post">
+        <label for="destination">Destination:</label>
+        <input type="text" id="destination" name="destination" required><br>
+
+        <label for="current_location">Current Location:</label>
+        <input type="text" id="current_location" name="current_location" required><br>
+
+        <label for="interests">Interests:</label>
+        <input type="checkbox" id="history" name="interests" value="History">
+        <label for="history">History</label>
+        <input type="checkbox" id="art" name="interests" value="Art">
+        <label for="art">Art</label><br>
+        <input type="checkbox" id="sports" name="interests" value="Sports">
+        <label for="sports">Sports</label><br>
+
+        <label for="dietary_restrictions">Dietary Restrictions:</label>
+        <input type="text" id="dietary_restrictions" name="dietary_restrictions" required><br>
+
+        <label for="budget">Budget:</label>
+        <input type="number" id="budget" name="budget" required><br>
+
+        <label for="number_of_days">Number of Days:</label>
+        <input type="number" id="number_of_days" name="number_of_days" required><br>
+
+        <label for="transportation_mode">Transportation Mode:</label>
+        <select id="transportation_mode" name="transportation_mode">
+            <option value="Air Travel">Air Travel</option>
+            <option value="Driving">Driving</option>
+            <option value="Bus/Shuttle">Bus/Shuttle</option>
+            <!-- Add more options as needed -->
+        </select><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
